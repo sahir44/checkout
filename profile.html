@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Profile — Blog Website</title>
+    <style>
+        :root{
+            --bg:#f5f7fb;
+            --card:#fff;
+            --muted:#6b7280;
+            --accent:#2563eb;
+            --radius:12px;
+            --shadow: 0 6px 20px rgba(18, 23, 40, 0.08);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;
+            background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);
+            color:#0f172a;
+            padding:40px 20px;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+        }
+
+        .container{
+            max-width:1000px;
+            margin:0 auto;
+            display:grid;
+            grid-template-columns: 320px 1fr;
+            gap:28px;
+            align-items:start;
+        }
+
+        /* Profile card */
+        .profile-card{
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:22px;
+            box-shadow:var(--shadow);
+            position:sticky;
+            top:28px;
+            min-height:220px;
+        }
+        .profile-top{
+            display:flex;
+            gap:14px;
+            align-items:center;
+        }
+        .avatar{
+            width:88px;
+            height:88px;
+            border-radius:18px;
+            overflow:hidden;
+            flex:0 0 88px;
+            background:linear-gradient(135deg,#e0e7ff,#fff);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;
+            color:var(--accent);
+            font-size:28px;
+            box-shadow: 0 6px 18px rgba(38, 60, 180, 0.06);
+        }
+        .profile-info h1{
+            margin:0 0 6px 0;
+            font-size:20px;
+            letter-spacing:-0.2px;
+        }
+        .profile-info p{ margin:0; color:var(--muted); font-size:14px; }
+        .meta{
+            display:flex;
+            gap:10px;
+            margin-top:12px;
+            color:var(--muted);
+            font-size:13px;
+        }
+        .meta strong{ color:#111827; font-weight:600; margin-right:6px; }
+
+        .actions{ margin-top:14px; display:flex; gap:8px; }
+        .btn{
+            border:0;
+            padding:8px 12px;
+            border-radius:10px;
+            background:var(--accent);
+            color:#fff;
+            cursor:pointer;
+            font-weight:600;
+            box-shadow: 0 6px 16px rgba(37,99,235,0.12);
+        }
+        .btn.ghost{
+            background:transparent;
+            color:var(--accent);
+            border:1px solid rgba(37,99,235,0.12);
+            box-shadow:none;
+        }
+
+        /* Content / posts */
+        .content{
+            display:flex;
+            flex-direction:column;
+            gap:18px;
+        }
+
+        .bio{
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:18px;
+            box-shadow:var(--shadow);
+            color:var(--muted);
+            line-height:1.5;
+        }
+
+        .posts{
+            display:grid;
+            gap:12px;
+        }
+        .post{
+            display:flex;
+            gap:12px;
+            background:var(--card);
+            border-radius:12px;
+            padding:12px;
+            align-items:flex-start;
+            box-shadow: 0 4px 12px rgba(2,6,23,0.04);
+        }
+        .post .thumb{
+            width:120px;
+            height:78px;
+            border-radius:8px;
+            background:linear-gradient(90deg,#f3f4f6,#fff);
+            flex:0 0 120px;
+            overflow:hidden;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:var(--muted);
+            font-size:13px;
+        }
+        .post .body{ flex:1; }
+        .post h3{ margin:0 0 6px 0; font-size:16px; }
+        .post p{ margin:0; color:var(--muted); font-size:14px; }
+        .tags{ margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+        .tag{
+            font-size:12px;
+            color:var(--accent);
+            background:rgba(37,99,235,0.06);
+            padding:4px 8px;
+            border-radius:999px;
+        }
+
+        /* Edit modal (simple) */
+        .modal{
+            position:fixed;
+            inset:0;
+            display:none;
+            align-items:center;
+            justify-content:center;
+            background:rgba(2,6,23,0.4);
+            z-index:60;
+        }
+        .modal.open{ display:flex; }
+        .modal-card{
+            width:520px;
+            background:var(--card);
+            border-radius:12px;
+            padding:18px;
+            box-shadow: 0 30px 80px rgba(2,6,23,0.35);
+        }
+        .field{ display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+        label{ font-size:13px; color:#111827; }
+        input[type="text"], textarea{
+            padding:10px 12px;
+            border-radius:8px;
+            border:1px solid #e6e9ef;
+            font-size:14px;
+        }
+        textarea{ min-height:84px; resize:vertical; }
+
+        .row{ display:flex; gap:8px; }
+        .muted-small{ color:var(--muted); font-size:13px; }
+
+        /* Responsive */
+        @media (max-width:880px){
+            .container{ grid-template-columns:1fr; }
+            .profile-card{ position:relative; top:0; }
+        }
+    </style>
+</head>
+<body>
+    <main class="container" id="app">
+        <aside class="profile-card" aria-labelledby="profile-name">
+            <div class="profile-top">
+                <div id="avatar" class="avatar" aria-hidden="true">NB</div>
+                <div class="profile-info">
+                    <h1 id="profile-name">Nithan Blog</h1>
+                    <p id="profile-title">Frontend Engineer • Writer</p>
+
+                    <div class="meta">
+                        <div><strong id="posts-count">8</strong> posts</div>
+                        <div><strong id="followers-count">1.2k</strong> followers</div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn" id="followBtn">Follow</button>
+                        <button class="btn ghost" id="editBtn">Edit profile</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <section class="content" aria-labelledby="profile-name">
+            <article class="bio" id="bio">
+                Passionate about web interfaces, performance, and accessible design. I write about
+                JavaScript, CSS, and shipping thoughtful frontend experiences.
+            </article>
+
+            <div class="posts" id="postsList" aria-live="polite">
+                <!-- posts populated by JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <strong>Edit profile</strong>
+                <button id="closeModal" class="btn ghost" style="padding:6px 10px">Close</button>
+            </div>
+
+            <div class="field">
+                <label for="inputName">Display name</label>
+                <input id="inputName" type="text" />
+            </div>
+
+            <div class="field">
+                <label for="inputTitle">Subtitle / Title</label>
+                <input id="inputTitle" type="text" />
+            </div>
+
+            <div class="field">
+                <label for="inputBio">Bio</label>
+                <textarea id="inputBio"></textarea>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:8px">
+                <button id="saveBtn" class="btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initial mock data for the profile and posts
+        const profile = {
+            name: "Nithan Blog",
+            title: "Frontend Engineer • Writer",
+            bio: "Passionate about web interfaces, performance, and accessible design. I write about JavaScript, CSS, and shipping thoughtful frontend experiences.",
+            avatarInitials: "NB",
+            postsCount: 8,
+            followers: "1.2k"
+        };
+
+        const posts = [
+            { id:1, title:"Designing Accessible Components", excerpt:"Practical tips to make components keyboard-accessible and inclusive.", tags:["accessibility","design"] },
+            { id:2, title:"A Deep Dive into CSS Grid", excerpt:"How CSS Grid changed layout patterns and when to use it.", tags:["css","layout"] },
+            { id:3, title:"Optimizing Images for the Web", excerpt:"Modern image formats, responsive sizes, and lazy-loading strategies.", tags:["performance","images"] },
+            { id:4, title:"State Management Without Complexity", excerpt:"Patterns that simplify application state using plain JS.", tags:["javascript","architecture"] },
+            { id:5, title:"Micro-interactions with CSS and JS", excerpt:"Small animations that boost perceived quality and usability.", tags:["ux","animation"] },
+        ];
+
+        // DOM references
+        const avatarEl = document.getElementById('avatar');
+        const nameEl = document.getElementById('profile-name');
+        const titleEl = document.getElementById('profile-title');
+        const bioEl = document.getElementById('bio');
+        const postsCountEl = document.getElementById('posts-count');
+        const followersEl = document.getElementById('followers-count');
+        const postsList = document.getElementById('postsList');
+
+        // render profile
+        function renderProfile(){
+            avatarEl.textContent = profile.avatarInitials;
+            nameEl.textContent = profile.name;
+            titleEl.textContent = profile.title;
+            bioEl.textContent = profile.bio;
+            postsCountEl.textContent = profile.postsCount;
+            followersEl.textContent = profile.followers;
+        }
+
+        // render posts
+        function renderPosts(){
+            postsList.innerHTML = '';
+            posts.forEach(p=>{
+                const el = document.createElement('article');
+                el.className = 'post';
+                el.innerHTML = `
+                    <div class="thumb" aria-hidden="true">IMG</div>
+                    <div class="body">
+                        <h3>${escapeHtml(p.title)}</h3>
+                        <p>${escapeHtml(p.excerpt)}</p>
+                        <div class="tags">${p.tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}</div>
+                    </div>
+                `;
+                postsList.appendChild(el);
+            });
+        }
+
+        // Simple escape for text
+        function escapeHtml(str){
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
+        // Modal logic
+        const modal = document.getElementById('modal');
+        const editBtn = document.getElementById('editBtn');
+        const closeModal = document.getElementById('closeModal');
+        const saveBtn = document.getElementById('saveBtn');
+        const inputName = document.getElementById('inputName');
+        const inputTitle = document.getElementById('inputTitle');
+        const inputBio = document.getElementById('inputBio');
+
+        editBtn.addEventListener('click', openModal);
+        closeModal.addEventListener('click', closeModalFn);
+        saveBtn.addEventListener('click', saveProfile);
+        modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModalFn(); });
+
+        function openModal(){
+            inputName.value = profile.name;
+            inputTitle.value = profile.title;
+            inputBio.value = profile.bio;
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden','false');
+            inputName.focus();
+        }
+        function closeModalFn(){
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden','true');
+        }
+        function saveProfile(){
+            profile.name = inputName.value.trim() || profile.name;
+            profile.title = inputTitle.value.trim() || profile.title;
+            profile.bio = inputBio.value.trim() || profile.bio;
+            // Update avatar initials to first letters of name
+            profile.avatarInitials = profile.name.split(' ').slice(0,2).map(s => s[0] || '').join('').toUpperCase() || 'U';
+            renderProfile();
+            closeModalFn();
+        }
+
+        // Follow button toggle
+        const followBtn = document.getElementById('followBtn');
+        let followed = false;
+        followBtn.addEventListener('click', ()=>{
+            followed = !followed;
+            followBtn.textContent = followed ? 'Following' : 'Follow';
+            followBtn.style.background = followed ? '#10b981' : '';
+            // Optional: update follower count (simple increment/decrement)
+            let followers = profile.followers;
+            if(typeof followers === 'string' && followers.includes('k')){
+                // keep as string for simple demo
+            }
+        });
+
+        // Initial render
+        renderProfile();
+        renderPosts();
+    </script>
+</body>
+</html>
