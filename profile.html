@@ -281,12 +281,72 @@
 
         // render profile
         function renderProfile(){
+            // avatar + initials
             avatarEl.textContent = profile.avatarInitials;
+
+            // Ensure profile card has a "cover" like Facebook
+            const card = document.querySelector('.profile-card');
+            if (!card.querySelector('.cover')){
+                const cover = document.createElement('div');
+                cover.className = 'cover';
+                cover.style.height = '120px';
+                cover.style.borderRadius = '12px 12px 0 0';
+                cover.style.background = 'linear-gradient(90deg,#4f46e5,#06b6d4)';
+                cover.style.margin = '-22px -22px 12px -22px';
+                cover.style.boxShadow = 'inset 0 -20px 60px rgba(0,0,0,0.06)';
+                cover.setAttribute('aria-hidden','true');
+                card.insertBefore(cover, card.firstChild);
+                card.style.overflow = 'visible';
+            }
+
+            // Make avatar larger and overlap the cover (facebook-like)
+            Object.assign(avatarEl.style, {
+                width: '104px',
+                height: '104px',
+                borderRadius: '50%',
+                marginTop: '-52px',
+                fontSize: '30px',
+                boxShadow: '0 12px 30px rgba(2,6,23,0.18)',
+                border: '4px solid white',
+                background: 'linear-gradient(135deg,#eef2ff,#fff)',
+                flex: '0 0 104px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            });
+
+            // Name/title styling (bigger, prominent)
             nameEl.textContent = profile.name;
+            Object.assign(nameEl.style, {
+                fontSize: '20px',
+                marginTop: '6px'
+            });
+
             titleEl.textContent = profile.title;
-            bioEl.textContent = profile.bio;
+            titleEl.style.color = 'var(--muted)';
+            titleEl.style.fontSize = '13px';
+            titleEl.style.marginTop = '4px';
+
+            // Meta counts (posts / followers) like a small info row
             postsCountEl.textContent = profile.postsCount;
             followersEl.textContent = profile.followers;
+
+            // Bio: keep but shorten preview here
+            bioEl.textContent = profile.bio;
+
+            // Adjust action buttons to facebook-like labels
+            const followButton = document.getElementById('followBtn');
+            const editButton = document.getElementById('editBtn');
+            if (followButton){
+                followButton.textContent = 'Add Friend';
+                followButton.style.background = '';
+                followButton.style.padding = '8px 14px';
+            }
+            if (editButton){
+                editButton.textContent = 'Message';
+                editButton.className = 'btn ghost';
+                editButton.style.padding = '8px 12px';
+            }
         }
 
         // render posts
